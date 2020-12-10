@@ -53,15 +53,19 @@ func stringify(board *[][]int) string {
 	return buf.String()
 }
 
+func printUniqueBoards(board *[][]int) {
+	boardAsString := stringify(board)
+	if !uniqueBoards[boardAsString] {
+		printBoard(board)
+		uniqueBoards[boardAsString] = true
+		uniqueBoardCount++
+	}
+}
+
 func checkBoard(N, size int, board *[][]int) {
 	if N == size {
 		// All queens placed, base recursion case
-		boardAsString := stringify(board)
-		if !uniqueBoards[boardAsString] {
-			printBoard(board)
-			uniqueBoards[boardAsString] = true
-			uniqueBoardCount++
-		}
+		printUniqueBoards(board)
 		return
 	}
 	for i := 0; i < size; i++ {
