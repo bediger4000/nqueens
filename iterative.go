@@ -30,7 +30,7 @@ func main() {
 		board = append(board, make([]int, sz))
 	}
 
-	var stack []*position
+	stack := make([]position, sz)
 	var queencount int
 
 	i, j := 0, 0
@@ -43,9 +43,11 @@ func main() {
 				}
 				board[i][j] = QUEEN
 				markSquares(sz, &board, i, j, MARK)
+
+				stack[queencount].i = i
+				stack[queencount].j = j
 				queencount++
 
-				stack = append(stack, &position{i: i, j: j})
 				i, j = 0, 0
 
 				if queencount == sz {
@@ -62,11 +64,9 @@ func main() {
 
 		// pop last queen's position off the stack
 		queencount--
-		pos := stack[queencount]
-		stack = stack[:queencount]
 
 		// remove that queen
-		i, j = pos.i, pos.j
+		i, j = stack[queencount].i, stack[queencount].j
 		markSquares(sz, &board, i, j, UNMARK)
 		board[i][j] = EMPTY
 
