@@ -18,11 +18,7 @@ func main() {
 	flag.Parse()
 	fmt.Printf("%d squares on a side\n", *size)
 
-	board := make([][]int, *size)
-
-	for i := 0; i < *size; i++ {
-		board[i] = make([]int, *size)
-	}
+	var board [12][12]int
 
 	checkBoard(0, *size, &board)
 
@@ -32,12 +28,12 @@ func main() {
 var uniqueBoards = make(map[string]bool)
 var uniqueBoardCount int
 
-func stringify(board *[][]int) string {
+func stringify(sz int, board *[12][12]int) string {
 	buf := bytes.Buffer{}
-	for _, row := range *board {
-		for _, x := range row {
+	for i := 0; i < sz; i++ {
+		for j := 0; j < sz; j++ {
 			mark := byte('.')
-			if x == QUEEN {
+			if (*board)[i][j] == QUEEN {
 				mark = byte('Q')
 			}
 			buf.WriteByte(mark)
@@ -46,19 +42,19 @@ func stringify(board *[][]int) string {
 	return buf.String()
 }
 
-func printUniqueBoards(board *[][]int) {
-	boardAsString := stringify(board)
+func printUniqueBoards(sz int, board *[12][12]int) {
+	boardAsString := stringify(sz, board)
 	if !uniqueBoards[boardAsString] {
-		printBoard(board)
+		printBoard(sz, board)
 		uniqueBoards[boardAsString] = true
 		uniqueBoardCount++
 	}
 }
 
-func checkBoard(ply, size int, board *[][]int) {
+func checkBoard(ply, size int, board *[12][12]int) {
 	if ply == size {
 		// All queens placed, base recursion case
-		printUniqueBoards(board)
+		printUniqueBoards(size, board)
 		return
 	}
 	for i := 0; i < size; i++ {
@@ -75,11 +71,11 @@ func checkBoard(ply, size int, board *[][]int) {
 	}
 }
 
-func printBoard(board *[][]int) {
-	for _, row := range *board {
-		for _, x := range row {
+func printBoard(sz int, board *[12][12]int) {
+	for i := 0; i < sz; i++ {
+		for j := 0; j < sz; j++ {
 			marker := '.'
-			if x == QUEEN {
+			if (*board)[i][j] == QUEEN {
 				marker = 'Q'
 			}
 			fmt.Printf("%c", marker)
@@ -90,17 +86,7 @@ func printBoard(board *[][]int) {
 	fmt.Println()
 }
 
-func printRawBoard(board *[][]int) {
-	for _, row := range *board {
-		for _, x := range row {
-			fmt.Printf("%2d", x)
-		}
-		fmt.Println()
-	}
-	fmt.Println()
-}
-
-func markSquares(size int, board *[][]int, p, q, mark int) {
+func markSquares(size int, board *[12][12]int, p, q, mark int) {
 	// row with <p,q> in it
 	for i := -size; i < size; i++ {
 		if i == 0 {
