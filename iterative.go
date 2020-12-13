@@ -24,61 +24,57 @@ func main() {
 	fmt.Printf("%d squares on a side\n", *size)
 
 	var board [][]int
+	sz := *size
 
-	for i := 0; i < *size; i++ {
-		board = append(board, make([]int, *size))
+	for i := 0; i < sz; i++ {
+		board = append(board, make([]int, sz))
 	}
 
 	var stack []*position
 	var queencount int
-	for m := 0; m < *size; m++ {
-		for n := 0; n < *size; n++ {
-			board[m][n] = QUEEN
-			markSquares(*size, &board, m, n, MARK)
-			queencount++
 
-			i, j := 0, 0
-			for {
-			OUT:
-				for ; i < *size; i++ {
-					for ; j < *size; j++ {
-						if board[i][j] != EMPTY {
-							continue
-						}
-						board[i][j] = QUEEN
-						markSquares(*size, &board, i, j, MARK)
-						queencount++
-
-						stack = append(stack, &position{i: i, j: j})
-						i, j = 0, 0
-
-						if queencount == *size {
-							printUniqueBoards(&board)
-							break OUT
-						}
-					}
-					j = 0
+	i, j := 0, 0
+	for {
+	OUT:
+		for ; i < sz; i++ {
+			for ; j < sz; j++ {
+				if board[i][j] != EMPTY {
+					continue
 				}
-				if len(stack) == 0 {
-					break
+				board[i][j] = QUEEN
+				markSquares(sz, &board, i, j, MARK)
+				queencount++
+
+				stack = append(stack, &position{i: i, j: j})
+				i, j = 0, 0
+
+				if queencount == sz {
+					printUniqueBoards(&board)
+					break OUT
 				}
-				l := len(stack) - 1
-				pos := stack[l]
-				stack = stack[:l]
-				i, j = pos.i, pos.j
-				markSquares(*size, &board, i, j, UNMARK)
-				board[i][j] = EMPTY
-				queencount--
-				j++
 			}
-
-			board[m][n] = EMPTY
-			markSquares(*size, &board, m, n, UNMARK)
-			queencount--
+			j = 0
 		}
+
+		if queencount == 0 {
+			break
+		}
+
+		// pop last queen's position off the stack
+		queencount--
+		pos := stack[queencount]
+		stack = stack[:queencount]
+
+		// remove that queen
+		i, j = pos.i, pos.j
+		markSquares(sz, &board, i, j, UNMARK)
+		board[i][j] = EMPTY
+
+		// set j to be one square to the right of queen's position.
+		j++
 	}
 
-	fmt.Printf("%d unique %d-queens boards\n", uniqueBoardCount, *size)
+	fmt.Printf("%d unique %d-queens boards\n", uniqueBoardCount, sz)
 }
 
 var uniqueBoards = make(map[string]bool)
