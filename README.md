@@ -33,6 +33,9 @@ $
 There's also an [iterative](iterative.go) version that builds,
 runs and outputs exactly the same way.
 
+Both versions can handle a maximum of a 12x12 board.
+You will die of old age waiting for all 12x12 board's solutions.
+
 ## My Solutions
 
 * [Recursive version](recursive.go)
@@ -59,9 +62,37 @@ of where it last placed a queen.
 This was a lot harder than I thought it would be.
 I wanted to place every queen, even the first one,
 with the same code.
-I found this to be impossible.
-The iterative backtracking is hard to get to terminate if you
-only have x,y position on board and a stack depth to guide you.
+I tried to get clever on the first go-round by 
+not treating the Nth-queen-placement exactly the same
+as all other queen's placement.
+This caused me to have a lot of difficulty terminating
+the looping and getting the first queen placed on all squares of the board.
+I finally got this to work by eliminating the optimizing of the special
+case of the first queen's placement.
 
-The iterative version takes about twice as long as the recursive
-version for a given number of queens (and hence, board size).
+### Performance Comparison
+
+I got iterative and recursive versions to have
+roughly the same performance by eliminating all slice accesses,
+and all dynamic allocations.
+The stack of positions and the board become fixed-size arrays.
+In the iterative version,
+I used a discrete variable to track stack depth,
+so I didn't need to use len(stack) anywhere.
+The stack is a fixed size array of `struct position`, so no dynamic allocation
+or garbage collection takes place.
+
+This does limit the maximum board size.
+I used 12x12, because I lost patience at running an 8x8 test case.
+
+In a way, this performance enhancement seems to confirm the
+1994 paper [Garbage Collection is Fast, But a Stack is Faster](http://dspace.mit.edu/handle/1721.1/6622).
+Their "stack" is the call-frame-stack managed by hardware to
+do stack-discipline function calls.
+My two versions have a hardware stack (recursive version)
+and a software stack (iterative version).
+I had to eliminate dynamic allocation to get performance.
+The only question is whether indirect accesses
+(which are somewhat hidden from the programmer by Go's syntax
+and runtime) were the performance problem,
+or if it was dynamic allocation and garbage collection.
