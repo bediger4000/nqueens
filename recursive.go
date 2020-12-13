@@ -62,21 +62,22 @@ func printUniqueBoards(board *[][]int) {
 	}
 }
 
-func checkBoard(N, size int, board *[][]int) {
-	if N == size {
+func checkBoard(ply, size int, board *[][]int) {
+	if ply == size {
 		// All queens placed, base recursion case
 		printUniqueBoards(board)
 		return
 	}
 	for i := 0; i < size; i++ {
 		for j := 0; j < size; j++ {
-			if (*board)[i][j] == EMPTY {
-				(*board)[i][j] = QUEEN
-				markSquares(size, board, i, j, MARK)
-				checkBoard(N+1, size, board)
-				markSquares(size, board, i, j, UNMARK)
-				(*board)[i][j] = EMPTY
+			if (*board)[i][j] != EMPTY {
+				continue
 			}
+			(*board)[i][j] = QUEEN
+			markSquares(size, board, i, j, MARK)
+			checkBoard(ply+1, size, board)
+			markSquares(size, board, i, j, UNMARK)
+			(*board)[i][j] = EMPTY
 		}
 	}
 }
