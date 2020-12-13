@@ -24,15 +24,8 @@ func main() {
 		board[i] = make([]int, *size)
 	}
 
-	for i := 0; i < *size; i++ {
-		for j := 0; j < *size; j++ {
-			board[i][j] = QUEEN
-			markSquares(*size, &board, i, j, 1)
-			checkBoard(1, *size, &board)
-			markSquares(*size, &board, i, j, -1)
-			board[i][j] = EMPTY
-		}
-	}
+	checkBoard(0, *size, &board)
+
 	fmt.Printf("%d unique %d-queens boards\n", uniqueBoardCount, *size)
 }
 
