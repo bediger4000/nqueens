@@ -47,6 +47,7 @@ func main() {
 				i, j = 0, 0
 
 				if queencount == sz {
+					// Got to N queens, backtrack to N-1 queens
 					printUniqueBoards(sz, &board)
 					break OUT
 				}
@@ -54,14 +55,22 @@ func main() {
 			j = 0
 		}
 
+		// loop terminating condition: no queen on the board.
+		// This should happen after the last of NxN squares on
+		// the board gets the first queen. When the last square
+		// has its (first layer) queen popped, <i, j> set to <N-1, N>
+		// by the "remove top queen" code below.
+		// The for-loop over i has one final iteration, but since j == N,
+		// the inner for-loop-over-j doesn't do any work. It just jumps
+		// over the code. No queen position gets pushed on the stack-of-positions.
 		if queencount == 0 {
 			break
 		}
 
-		// pop last queen's position off the stack
+		// pop top queen's position off the stack
 		queencount--
 
-		// remove that queen
+		// remove top queen from board
 		i, j = stack[queencount].i, stack[queencount].j
 		markSquares(sz, &board, i, j, UNMARK)
 		board[i][j] = EMPTY
