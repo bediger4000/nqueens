@@ -155,17 +155,18 @@ func printBoard(sz int, board *[12][12]int) {
 
 func markSquares(size int, board *[12][12]int, p, q, mark int) {
 	// row with <p,q> in it
-	for i := 0; i < size; i++ {
-		if i == q {
-			continue
-		}
+	for i := 0; i < q; i++ {
 		(*board)[p][i] += mark
 	}
+	for i := q + 1; i < size; i++ {
+		(*board)[p][i] += mark
+	}
+
 	// col with <p,q> in it
-	for i := 0; i < size; i++ {
-		if i == p {
-			continue
-		}
+	for i := 0; i < p; i++ {
+		(*board)[i][q] += mark
+	}
+	for i := p + 1; i < size; i++ {
 		(*board)[i][q] += mark
 	}
 
