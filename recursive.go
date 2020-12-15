@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"log"
@@ -38,21 +37,19 @@ func main() {
 	fmt.Printf("%d unique %d-queens boards\n", uniqueBoardCount, *size)
 }
 
-var uniqueBoards = make(map[string]bool)
+var uniqueBoards = make(map[[144]byte]bool)
 var uniqueBoardCount int
 
-func stringify(sz int, board *[12][12]int) string {
-	buf := bytes.Buffer{}
+func stringify(sz int, board *[12][12]int) [144]byte {
+	var buf [144]byte
 	for i := 0; i < sz; i++ {
 		for j := 0; j < sz; j++ {
-			mark := byte('.')
 			if (*board)[i][j] == QUEEN {
-				mark = byte('Q')
+				buf[12*i+j] = 'Q'
 			}
-			buf.WriteByte(mark)
 		}
 	}
-	return buf.String()
+	return buf
 }
 
 func printUniqueBoards(sz int, board *[12][12]int) {
