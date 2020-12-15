@@ -1,9 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
+	"log"
+	"os"
+	"runtime/pprof"
 )
 
 const (
@@ -20,8 +22,18 @@ type position struct {
 
 func main() {
 	size := flag.Int("N", 5, "size of side of board")
+	cpuprofile := flag.String("cpuprofile", "", "write cpu profile to file")
 	flag.Parse()
 	fmt.Printf("%d squares on a side\n", *size)
+
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
 
 	sz := *size
 	var board [12][12]int
@@ -86,17 +98,17 @@ var uniqueBoards = make(map[string]bool)
 var uniqueBoardCount int
 
 func stringify(sz int, board *[12][12]int) string {
-	buf := bytes.Buffer{}
+	var buf [144]byte
 	for i := 0; i < sz; i++ {
 		for j := 0; j < sz; j++ {
 			mark := byte('.')
 			if (*board)[i][j] == QUEEN {
 				mark = byte('Q')
 			}
-			buf.WriteByte(mark)
+			buf[12*i+j] = mark
 		}
 	}
-	return buf.String()
+	return string(buf[:])
 }
 
 func printUniqueBoards(sz int, board *[12][12]int) {
@@ -135,32 +147,18 @@ func printRawBoard(board *[12][12]int) {
 
 func markSquares(size int, board *[12][12]int, p, q, mark int) {
 	// row with <p,q> in it
-	for i := -size; i < size; i++ {
-		if i == 0 {
+	for i := 0; i < size; i++ {
+		if i == q {
 			continue
 		}
-		n := q + i
-		if n < 0 {
-			continue
-		}
-		if n >= size {
-			continue
-		}
-		(*board)[p][n] += mark
+		(*board)[p][i] += mark
 	}
 	// col with <p,q> in it
-	for i := -size; i < size; i++ {
-		if i == 0 {
+	for i := 0; i < size; i++ {
+		if i == p {
 			continue
 		}
-		m := p + i
-		if m < 0 {
-			continue
-		}
-		if m >= size {
-			continue
-		}
-		(*board)[m][q] += mark
+		(*board)[i][q] += mark
 	}
 
 	// diagonal, lower left to upper right
