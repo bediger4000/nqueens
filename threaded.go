@@ -109,14 +109,14 @@ func stringify(sz int, board *[12][12]int) string {
 }
 
 func collectReports(sz int, board *[12][12]int) {
-	uniqueLock.Lock()
 	boardAsString := stringify(sz, board)
+	uniqueLock.Lock()
+	defer uniqueLock.Unlock()
 	if !uniqueBoards[boardAsString] {
 		printBoard(sz, board)
 		uniqueBoards[boardAsString] = true
 		uniqueBoardCount++
 	}
-	uniqueLock.Unlock()
 }
 
 func checkBoard(ply, size int, board *[12][12]int) {
@@ -171,45 +171,18 @@ func markSquares(size int, board *[12][12]int, p, q, mark int) {
 	}
 
 	// diagonal, lower left to upper right
-	for i := -size; i < size; i++ {
-		if i == 0 {
-			continue
-		}
-		m := p + i
-		if m < 0 {
-			continue
-		}
-		if m >= size {
-			continue
-		}
-		n := q + i
-		if n < 0 {
-			continue
-		}
-		if n >= size {
-			continue
-		}
-		(*board)[m][n] += mark
+	for i := 1; p-i >= 0 && q-i >= 0; i++ {
+		(*board)[p-i][q-i] += mark
 	}
+	for i := 1; p+i < size && q+i < size; i++ {
+		(*board)[p+i][q+i] += mark
+	}
+
 	// diagonal, upper left to lower right
-	for i := -size; i < size; i++ {
-		if i == 0 {
-			continue
-		}
-		m := p - i
-		if m < 0 {
-			continue
-		}
-		if m >= size {
-			continue
-		}
-		n := q + i
-		if n < 0 {
-			continue
-		}
-		if n >= size {
-			continue
-		}
-		(*board)[m][n] += mark
+	for i := 1; p+i < size && q-i >= 0; i++ {
+		(*board)[p+i][q-i] += mark
+	}
+	for i := 1; p-i >= 0 && q+i < size; i++ {
+		(*board)[p-i][q+i] += mark
 	}
 }
