@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"log"
@@ -91,21 +90,21 @@ type job struct {
 }
 
 var uniqueLock sync.Mutex
-var uniqueBoards = make(map[string]bool)
+var uniqueBoards = make(map[[144]byte]bool)
 var uniqueBoardCount int
 
-func stringify(sz int, board *[12][12]int) string {
-	buf := bytes.Buffer{}
+func stringify(sz int, board *[12][12]int) [144]byte {
+	var buf [144]byte
 	for i := 0; i < sz; i++ {
 		for j := 0; j < sz; j++ {
 			mark := byte('.')
 			if (*board)[i][j] == QUEEN {
 				mark = byte('Q')
 			}
-			buf.WriteByte(mark)
+			buf[i*12+j] = mark
 		}
 	}
-	return buf.String()
+	return buf
 }
 
 func collectReports(sz int, board *[12][12]int) {
