@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"log"
+	"os"
+	"runtime/pprof"
 )
 
 const (
@@ -15,8 +18,18 @@ const (
 
 func main() {
 	size := flag.Int("N", 5, "size of side of board")
+	cpuprofile := flag.String("cpuprofile", "", "write cpu profile to file")
 	flag.Parse()
 	fmt.Printf("%d squares on a side\n", *size)
+
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
 
 	var board [12][12]int
 
@@ -88,32 +101,18 @@ func printBoard(sz int, board *[12][12]int) {
 
 func markSquares(size int, board *[12][12]int, p, q, mark int) {
 	// row with <p,q> in it
-	for i := -size; i < size; i++ {
-		if i == 0 {
+	for i := 0; i < size; i++ {
+		if i == q {
 			continue
 		}
-		n := q + i
-		if n < 0 {
-			continue
-		}
-		if n >= size {
-			continue
-		}
-		(*board)[p][n] += mark
+		(*board)[p][i] += mark
 	}
 	// col with <p,q> in it
-	for i := -size; i < size; i++ {
-		if i == 0 {
+	for i := 0; i < size; i++ {
+		if i == p {
 			continue
 		}
-		m := p + i
-		if m < 0 {
-			continue
-		}
-		if m >= size {
-			continue
-		}
-		(*board)[m][q] += mark
+		(*board)[i][q] += mark
 	}
 
 	// diagonal, lower left to upper right
