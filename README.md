@@ -13,7 +13,7 @@ That is, no two queens can share a row, a column or a diagonal.
 
 ## Building and Running
 
-I wrote two solutions in [Go](https://golang.org/).
+I wrote three solutions in [Go](https://golang.org/).
 
 This code does not depend on any 3rd party packages.
 I did not do Go modules.
@@ -45,6 +45,11 @@ There's also an [iterative](iterative.go) version that builds,
 runs and outputs exactly the same way,
 except it's named `iterative.go`.
 
+I wrote a [threaded](threaded.go) version of the recursive algorithm.
+It starts one goroutine per square on the board,
+each goroutine finds all the N-queen solutions it can.
+Only unique solutions are reported.
+
 Both versions can handle a maximum of a 12x12 board.
 You will die of old age waiting for all 12x12 board's solutions.
 
@@ -66,6 +71,23 @@ to avoid copying a bunch of slices all over the place.
 
 The recursive function mostly exists to keep track of where
 on the chess board a queen got placed.
+
+* [Threaded version](threaded.go)
+
+Keeps a pool of goroutines blocked on a channel,
+sending `(i,j)` coordinates of the first queen to place on
+an oterwise empty board.
+Each goroutine finds all the N-queen placements resulting from
+recursive backtracking from that starting queen.
+Only unique configurations are counted and reported.
+I mixed CSP-style concurrency (goroutine blocked on a channel)
+and the usual mutex-lock concurrency,
+which I used when filtering and counting unique configurations.
+The code uses a `*[12][12]int` pointer-to-array as the chess board
+representation, to avoid hidden array copying when recursing.
+That means that a successful configuration is a pointer,
+which would cause problems if passed through a channel to a goroutine
+managing filtering and counting.
 
 * [Iterative version](iterative.go)
 
@@ -109,3 +131,37 @@ The only question is whether indirect accesses
 (which are somewhat hidden from the programmer by Go's syntax
 and runtime) were the performance problem,
 or if it was dynamic allocation and garbage collection.
+
+For once, the threaded version can outperform the single-threaded algorithms.
+I did have to profile and optimize to get there, however.
+
+#### Performance Testing
+
+* Dell PowerEdge R530, runtime.NumCPU reports 40
+* Dell Latitude E6420, runtime.NumCPU reports 4
+
+I used 8 queens, which finds 92 unique solutions.
+
+* Single-threaded
+
+|machine|recursive|iterative|
+|-------|------|------|
+|R530   |17.7  |7.3 |
+|E6420  |12.8  |8.8 |
+
+Single-threaded versions give about the same numbers on both machines.
+
+* Multi-threaded
+
+|Threads|R530|E6420|
+|-------|----|------|
+|1|7.689|9.314|
+|2|4.061|5.692|
+|5|1.839|4.989|
+|10|1.247|4.624|
+|15|1.514|4.596|
+|20|1.699|4.555|
+|25|1.835|4.687|
+|30|2.225|4.566|
+|35|2.126|4.581|
+|40|2.408|4.696|
