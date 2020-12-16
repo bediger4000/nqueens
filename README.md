@@ -165,3 +165,15 @@ Single-threaded versions give about the same numbers on both machines.
 |30|2.225|4.566|
 |35|2.126|4.581|
 |40|2.408|4.696|
+
+The multi-threaded version is just a number of recursive versions in parallel,
+so it's not too surprising that 1 thread takes about as long as the
+single-threaded version.
+I'm amused that the R530 bottoms out at about 1.25 seconds, and 10 threads,
+while the E6420 bottoms out at 4.6 seconds, 15 threads.
+I suspect that the variation at 5 threads and above is just noise.
+
+Since the R530 has more CPUs and more hyperthreads,
+it's not too surprising that it out-performs the E6420.
+What I don't understand is why the R530 bottoms out at 10 threads,
+given the large number of CPUs available.
