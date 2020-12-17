@@ -177,3 +177,21 @@ Since the R530 has more CPUs and more hyperthreads,
 it's not too surprising that it out-performs the E6420.
 What I don't understand is why the R530 bottoms out at 10 threads,
 given the large number of CPUs available.
+
+#### Performance Tips
+
+* I would not have improved performance without Go's [pprof]().
+Profile first, even though sometimes it just shows your
+program spending a lot of time in `syscall.Syscall` sometimes.
+* Accessing a slice-of-slices is somewhat slower than
+accessing a 2-D array.
+* Creating a string from a slice-of-slices can be very slow.
+* Using a smaller (144) array of bytes as a map key
+is seemingly faster than using a string.
+* A single for-loop with an if-statement in it to avoid
+a particular index is slower than 2 for-loops whose indices
+skip that particular index.
+* Lots of dynamic allocation (i.e. `p := &position{i:x, j:y}`
+causes slowdowns.
+I'm not sure if dynamic allocation or garbage collection
+takes the time.
