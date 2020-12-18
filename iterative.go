@@ -133,16 +133,6 @@ func printBoard(sz int, board *[12][12]int) {
 	fmt.Println()
 }
 
-func printRawBoard(board *[12][12]int) {
-	for _, row := range *board {
-		for _, x := range row {
-			fmt.Printf("%2d", x)
-		}
-		fmt.Println()
-	}
-	fmt.Println()
-}
-
 func markSquares(size int, board *[12][12]int, p, q, mark int) {
 	// row with <p,q> in it
 	for i := 0; i < size; i++ {
