@@ -46,8 +46,12 @@ runs and outputs exactly the same way,
 except it's named `iterative.go`.
 
 I wrote a [threaded](threaded.go) version of the recursive algorithm.
-It starts one goroutine per square on the board,
-each goroutine finds all the N-queen solutions it can.
+It starts a pool of goroutines (based on value of -t flag),
+then sends `x,y` coords of all squares on the board down
+a channel.
+The pool of goroutines block on the empty channel,
+then find all the N-queen solutions starting with
+a queen on the `x,y` coordinate of the square they're given.
 Only unique solutions are reported.
 
 Both versions can handle a maximum of a 12x12 board.
