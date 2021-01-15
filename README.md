@@ -70,11 +70,20 @@ it calls iself to place the next queen.
 Placing N queens causes the code to see if the current
 board has already been encountered.
 If not, it prints the board.
-This function, in Go, uses a pointer to a board of type `[][]int`
-to avoid copying a bunch of slices all over the place.
+This function, in Go, uses a pointer to a board of type `[12][12]int`
+to avoid copying a bunch of slices or 12x12 2-D arrays all over the place.
 
 The recursive function mostly exists to keep track of where
 on the chess board a queen got placed.
+Each recursive function iterates over the squares of the board,
+placing a queen on an empty square that isn't attacked by any queen
+currently on the board.
+After placing that queen, it calls itself.
+Recursion stops if the recursion reaches N-plies deep.
+Backtracking occurs when the recursive function returns from calling itself.
+It removes the queen it just placed,
+then iterates to find another empty square on the board,
+not under attack by any existing queen.
 
 * [Threaded version](threaded.go)
 
