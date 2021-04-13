@@ -9,7 +9,21 @@ The iterative version might even be a "hard".
 
 The idea is to place N queen chess pieces on an N by N chessboard
 so that no queen can capture any other queen.
-That is, no two queens can share a row, a column or a diagonal.
+
+Ha ha! It is a Daily Coding Problem, and it's rated "[Hard]".
+
+---
+## Daily Coding Problem: Problem #855 [Hard]
+
+This problem was asked by Microsoft.
+
+You have an N by N board.
+Write a function that, given N,
+returns the number of possible arrangements of the board where N queens
+can be placed on the board without threatening each other,
+i.e. no two queens share the same row, column, or diagonal.
+
+---
 
 ## Building and Running
 
